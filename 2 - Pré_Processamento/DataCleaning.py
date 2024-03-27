@@ -2,10 +2,13 @@ import pandas as pd
 import numpy as np
 
 def main():
-    # Faz a leitura do arquivo
-    names = ['work_year','job_title','job_category','salary_currency','salary','salary_in_usd','employee_residence'
-             ,'experience_level','employment_type','work_setting','company_location','company_size'] 
-    features = ['work_year','job_title','salary_currency','salary','company_location','company_size']
+
+    names = ["work_year","job_title","job_category","salary_currency","salary","salary_in_usd",
+             "employee_residence","experience_level","employment_type","work_setting","company_location"
+             ,"company_size"] 
+    features = ["work_year","job_title","job_category","salary_currency","salary","salary_in_usd",
+             "employee_residence","experience_level","employment_type","work_setting","company_location"
+             ,"company_size"]
     output_file ='1-DataBase/DatasetJobsScienceDadosClear.csv'
     input_file ='1-DataBase/DatasetJobsScienceDados.csv'
     df = pd.read_csv(input_file,         # Nome do arquivo com dados
@@ -24,7 +27,7 @@ def main():
     print(df.info())
     print("\n")
     
-    # Imprime uma analise descritiva sobre dos dados
+    # Imprime uma análise descritiva sobre dos dados
     print("DESCRIÇÃO DOS DADOS\n")
     print(df.describe())
     print("\n")
@@ -39,7 +42,7 @@ def main():
     method = 'mode' # number or median or mean or mode
     
     for c in columns_missing_value:
-        UpdateMissingValues(df, c)
+        main().UpdateMissingValues(df, c, method)
     
     print(df.describe())
     print("\n")
@@ -49,7 +52,7 @@ def main():
     
     # Salva arquivo com o tratamento para dados faltantes
     df.to_csv(output_file, header=False, index=False)  
-    
+
 
 def UpdateMissingValues(df, column, method="mode", number=0):
     if method == 'number':
