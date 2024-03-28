@@ -22,6 +22,10 @@ def main():
     print(df.isnull().sum())
     print("\n")   
     print(df.describe().T)
+
+    columns_missing_value = df.columns[df.isnull().any()]
+    print(columns_missing_value)
+    method = 'mode' # number or median or mean or mode
     df.to_csv(output_file, header=False, index=False)
     
 
