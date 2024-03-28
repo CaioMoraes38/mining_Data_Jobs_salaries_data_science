@@ -18,20 +18,13 @@ def main():
                      na_values='?')      # Define que ? será considerado valores ausentes
                      
    # Imprime a quantidade de valores faltantes por coluna
-    print("VALORES FALTANTES\n")
+    print("\nVALORES FALTANTES\n")
     print(df.isnull().sum())
     print("\n")   
     print(df.describe().T)
 
-    columns_missing_value = df.columns[df.isnull().any()]
-    print(columns_missing_value)
-    method = 'mode' # number or median or mean or mode
-    df.to_csv(output_file, header=False, index=False)
-    
-
-    print(df.describe(include=object).T)
-   
-    print(f"Data has {df.shape[0]} instances and {df.shape[1] - 1} attributes.")
+  
+    df.to_csv(output_file, header=False, index=False)   
     
     '''
     Mostrar todos os valores e frequências de uma coluna categórica  
