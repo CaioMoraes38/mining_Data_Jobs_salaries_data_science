@@ -10,7 +10,7 @@ def main():
     names = ['work_year','job_title','job_category','salary_currency','salary','salary_in_usd','employee_residence'
              ,'experience_level','employment_type','work_setting','company_location','company_size']
     features =  ['work_year','job_title','salary_currency','salary','company_location','company_size']
-    target = 'company_location'
+    target = 'salary'
     df = pd.read_csv(input_file,    # Nome do arquivo com dados
                      names = names) # Nome das colunas                      
     ShowInformationDataFrame(df,"Dataframe original")
