@@ -6,11 +6,10 @@ import matplotlib.pyplot as plt
 
 def main():
     # Faz a leitura do arquivo
-    input_file = '1-Datasets/DatasetJobsScienceDadosClear.csv'
-    names = ['work_year','job_title','job_category','salary_currency','salary','salary_in_usd','employee_residence'
-             ,'experience_level','employment_type','work_setting','company_location','company_size']
-    features = ['work_year','job_title','salary_currency','salary','company_location','company_size']
-    target = 'salary_currency'
+    input_file = '0-Datasets/iris.csv'
+    names = ['x1','x2','x3','x4','Target']
+    features = ['x1','x2','x3','x4']
+    target = 'Target'
     df = pd.read_csv(input_file,    # Nome do arquivo com dados
                      names = names) # Nome das colunas                      
     ShowInformationDataFrame(df,"Dataframe original")
@@ -57,8 +56,8 @@ def VisualizePcaProjection(finalDf, targetColumn):
     ax.set_xlabel('Principal Component 1', fontsize = 15)
     ax.set_ylabel('Principal Component 2', fontsize = 15)
     ax.set_title('2 component PCA', fontsize = 20)
-    targets = [0, 1, ]
-    colors = ['r', 'g']
+    targets = ["Setosa", 'Versicolor',"Virginica" ]
+    colors = ['r', 'g', 'b']
     for target, color in zip(targets,colors):
         indicesToKeep = finalDf[targetColumn] == target
         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
