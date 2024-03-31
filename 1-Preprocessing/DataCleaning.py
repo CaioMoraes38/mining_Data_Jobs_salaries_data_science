@@ -6,7 +6,7 @@ def main():
     names = ['work_year','job_title','job_category','salary_currency','salary','salary_in_usd',
         'employee_residence','experience_level','employment_type','work_setting','company_location',
         'company_size'] 
-    features = ['work_year','job_title','job_category','salary_currency','salary','salary_in_usd']
+    features = ['work_year','job_title','job_category','salary_in_usd','work_setting','experience_level']
     output_file = '0-Datasets/DatasetJobsScienceDadosClear.csv'
     input_file = '0-Datasets/DatasetJobsScienceDados.csv'
     df = pd.read_csv(input_file,         # Nome do arquivo com dados
