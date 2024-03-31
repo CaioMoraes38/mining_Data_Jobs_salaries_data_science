@@ -49,7 +49,7 @@ def main():
     print("\n")
     
     # Salva arquivo com o tratamento para dados faltantes
-    df.to_csv(output_file, header=False, index=False)  
+    df.to_csv(output_file,index=False)  
     
 
 def UpdateMissingValues(df, column, method="mode", number=0):

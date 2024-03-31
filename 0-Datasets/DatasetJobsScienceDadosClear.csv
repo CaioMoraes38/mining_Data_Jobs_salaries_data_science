@@ -1,4 +1,5 @@
 work_year,job_title,job_category,salary_in_usd,experience_level,work_setting
+work_year,job_title,job_category,salary_in_usd,experience_level,work_setting
 2023,Data DevOps Engineer,Data Engineering,95012,Mid-level,Hybrid
 2023,Data Architect,Data Architecture and Modeling,186000,Senior,In-person
 2023,Data Architect,Data Architecture and Modeling,81800,Senior,In-person
