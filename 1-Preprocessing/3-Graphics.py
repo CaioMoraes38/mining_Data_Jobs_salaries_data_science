@@ -16,10 +16,7 @@ def main():
     plt.xticks(rotation=45)
     plt.grid(axis='y')
     plt.tight_layout()
-    plt.show()
 
-    
-  
     plt.figure(figsize=(8, 6))
     plt.hist(df_clear['salary_in_usd'], bins=20, color='skyblue')
     plt.title('Histograma da Coluna Salary (USD)')
