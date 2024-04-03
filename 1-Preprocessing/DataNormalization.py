@@ -5,13 +5,16 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 def main():
-    # Faz a leitura do arquivo
-    input_file = '0-Datasets/MamoClear.data'
-    names = ['Age','Shape','Margin','Density','Severity']
-    features = ['Age','Shape','Margin','Density']
-    target = 'Severity'
-    df = pd.read_csv(input_file,    # Nome do arquivo com dados
-                     names = names) # Nome das colunas                      
+   
+    names = ['work_year','job_title','job_category','salary_currency','salary','salary_in_usd',
+        'employee_residence','experience_level','employment_type','work_setting','company_location',
+        'company_size'] 
+    features = ['work_year','job_title','job_category','salary_in_usd','work_setting','experience_level']
+    input_file = '0-Datasets/DatasetJobsScienceDadosClear.csv'
+    target = 'work_year'
+    df = pd.read_csv(input_file,         
+                     names = names)   
+
     ShowInformationDataFrame(df,"Dataframe original")
 
     # Separating out the features
