@@ -19,7 +19,7 @@ def main():
     df_features = df[colunas_features]
 
     # SALVAR O ARQUIVO
-    df_features.to_csv('0-Datasets/DatasetJobsScienceDadosClear.csv', index=False) 
+    df_features.to_csv('0-Datasets/DatasetJobsScienceDadosClear.csv', header=False,index=False) 
 
     df_features.describe()
 
