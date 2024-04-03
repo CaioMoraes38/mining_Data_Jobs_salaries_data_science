@@ -13,7 +13,7 @@ def main():
     print(missing_values)
 
     colunas_features = ['work_year','job_title','job_category','salary_in_usd',
-    'work_setting','experience_level']
+    'work_setting']
 
     # CRIA UM NOVO DATAFRAME COM AS COLUNAS DESEJADAS
     df_features = df[colunas_features]
