@@ -50,7 +50,7 @@ def main():
     for method, normalized_df in [('Z-Score', normalized1_df), ('Min-Max', normalized2_df),
                                 ('Robust', normalized3_df), ('Unit-Vector', normalized3_df)]:
         output_file = f'0-Datasets/Normatização_{method}_{input_file.split("/")[-1]}'
-        normalized_df.to_csv(output_file, header=False, index=False)
+        normalized_df.to_csv(output_file, header=True, index=False)
 
 if __name__ == "__main__":
     main()
