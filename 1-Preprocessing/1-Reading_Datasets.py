@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def main():
     df = pd.read_csv('0-Datasets/DatasetJobsScienceDados.csv')
-    print(df.head(30))
+    print(df.head(15))
     
     
     missing_values = df.isnull().sum()
@@ -25,10 +27,11 @@ def main():
     
     
     print("\nVariações de dados nas Colunas: \n")
-    print(df_features.nunique())
+    print(df.nunique())
 
     # SALVAR O ARQUIVO
     df_features.to_csv('0-Datasets/DatasetJobsScienceDadosClear.csv',index=False)    
+
 
 if __name__ == "__main__":
     main()

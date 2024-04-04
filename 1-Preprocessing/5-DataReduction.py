@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def main():
    
-    input_file = '0-Datasets/DatasetJobsScienceDadosClear_Normalized.csv'
+    input_file = '0-Datasets/DatasetJobsScienceDadosClear.csv'
     df = pd.read_csv(input_file)                      
     ShowInformationDataFrame(df, "Dataframe original")
 
