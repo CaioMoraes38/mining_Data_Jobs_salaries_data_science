@@ -5,14 +5,14 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 def main():
-    # Faz a leitura do arquivo
-    input_file = '0-Datasets/DatasetJobsScienceDadosClear.csv'
+   
+    input_file = '0-Datasets/DatasetJobsScienceDadosClear_Normalized.csv'
     df = pd.read_csv(input_file)                      
     ShowInformationDataFrame(df, "Dataframe original")
 
     # Selecionando as colunas
     features = ['work_year', 'salary_in_usd']
-    target = 'job_title'
+    target = 'job_category'
 
     # Separando os recursos
     x = df.loc[:, features].values
@@ -40,7 +40,6 @@ def main():
     
     VisualizePcaProjection(finalDf, target)
 
-
 def ShowInformationDataFrame(df, message=""):
     print(message + "\n")
     print(df.info())
@@ -56,16 +55,16 @@ def VisualizePcaProjection(finalDf, targetColumn):
     ax.set_ylabel('Principal Component 2', fontsize=15)
     ax.set_title('2 component PCA', fontsize=20)
     targets = finalDf[targetColumn].unique()
-    colors = ['r', 'g', 'b', 'y', 'c', 'm']
+    colors = ['r', 'g', 'b', 'y']
     for target, color in zip(targets, colors):
         indicesToKeep = finalDf[targetColumn] == target
         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
                    finalDf.loc[indicesToKeep, 'principal component 2'],
                    c=color, s=50)
+        
     ax.legend(targets)
     ax.grid()
     plt.show()
-
 
 if __name__ == "__main__":
     main()

@@ -10,12 +10,10 @@ def main():
 
    
     numeric_columns = df_clear.select_dtypes(include=[np.number]).columns
-
     
     scaler = MinMaxScaler()
-    df_clear[numeric_columns] = scaler.fit_transform(df_clear[numeric_columns])
+    df_clear[numeric_columns] = scaler.fit_transform(df_clear[numeric_columns]) 
 
-    
     df_clear.to_csv('0-Datasets/DatasetJobsScienceDadosClear_Normalized.csv', index=False)
 
     plt.hist(df_clear['work_year'], bins=20, color='skyblue', edgecolor='black')
