@@ -1,99 +1,78 @@
-#Implementation of Kmeans from scratch and using sklearn
-#Loading the required modules 
 import numpy as np
-from scipy.spatial.distance import cdist 
-from sklearn.datasets import load_digits
+import pandas as pd
+from scipy.spatial.distance import cdist
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from sklearn.metrics import silhouette_samples
 import matplotlib.pyplot as plt
- 
-#Defining our kmeans function from scratch
-def KMeans_scratch(x,k, no_of_iterations):
+
+# Função KMeans implementada do zero
+def KMeans_scratch(x, k, no_of_iterations):
     idx = np.random.choice(len(x), k, replace=False)
-    #Randomly choosing Centroids 
-    centroids = x[idx, :] #Step 1
-     
-    #finding the distance between centroids and all the data points
-    distances = cdist(x, centroids ,'euclidean') #Step 2
-     
-    #Centroid with the minimum Distance
-    points = np.array([np.argmin(i) for i in distances]) #Step 3
-     
-    #Repeating the above steps for a defined number of iterations
-    #Step 4
-    for _ in range(no_of_iterations): 
+    centroids = x[idx, :]  # Passo 1: Escolhendo centroides aleatoriamente
+
+    for _ in range(no_of_iterations):
+        distances = cdist(x, centroids, 'euclidean')  # Passo 2: Calculando distâncias
+        points = np.array([np.argmin(i) for i in distances])  # Passo 3: Atribuindo pontos aos clusters mais próximos
+
         centroids = []
         for idx in range(k):
-            #Updating Centroids by taking mean of Cluster it belongs to
-            temp_cent = x[points==idx].mean(axis=0) 
+            # Passo 4: Atualizando os centroides
+            temp_cent = x[points == idx].mean(axis=0)
             centroids.append(temp_cent)
- 
-        centroids = np.vstack(centroids) #Updated Centroids 
-         
-        distances = cdist(x, centroids ,'euclidean')
-        points = np.array([np.argmin(i) for i in distances])
-         
+
+        centroids = np.vstack(centroids)  # Atualizando os centroides para a próxima iteração
+
     return points
 
-
-def show_digitsdataset(digits):
-    fig = plt.figure(figsize=(6, 6))  # figure size in inches
-    fig.subplots_adjust(left=0, right=1, bottom=0, top=1, hspace=0.05, wspace=0.05)
-
-    for i in range(64):
-        ax = fig.add_subplot(8, 8, i + 1, xticks=[], yticks=[])
-        ax.imshow(digits.images[i], cmap=plt.cm.binary, interpolation='nearest')
-        # label the image with the target value
-        ax.text(0, 7, str(digits.target[i]))
-
-    #fig.show()
-
-
-def plot_samples(projected, labels, title):    
+# Função para plotar amostras
+def plot_samples(projected, labels, title):
     fig = plt.figure()
     u_labels = np.unique(labels)
     for i in u_labels:
-        plt.scatter(projected[labels == i , 0] , projected[labels == i , 1] , label = i,
+        plt.scatter(projected[labels == i, 0], projected[labels == i, 1], label=i,
                     edgecolor='none', alpha=0.5, cmap=plt.cm.get_cmap('tab10', 10))
-    plt.xlabel('component 1')
-    plt.ylabel('component 2')
+    plt.xlabel('Component 1')
+    plt.ylabel('Component 2')
     plt.legend()
     plt.title(title)
 
- 
 def main():
-    #Load dataset Digits
-    digits = load_digits()
-    show_digitsdataset(digits)
-    
-    #Transform the data using PCA
-    pca = PCA(2)
-    projected = pca.fit_transform(digits.data)
-    print(pca.explained_variance_ratio_)
-    print(digits.data.shape)
-    print(projected.shape)    
-    plot_samples(projected, digits.target, 'Original Labels')
+    # Carregando o conjunto de dados
+    data = pd.read_csv('0-Datasets/DatasetJobsScienceDadosClear.csv')
+
+    # Convertendo colunas categóricas em numéricas usando o método de codificação de rótulos
+    data['job_title'] = data['job_title'].astype('category').cat.codes
+    data['job_category'] = data['job_category'].astype('category').cat.codes
+    data['work_setting'] = data['work_setting'].astype('category').cat.codes
+    data['company_size'] = data['company_size'].astype('category').cat.codes
+
+    # Selecione apenas as colunas numéricas para o modelo
+    numeric_cols = ['work_year', 'salary_in_usd', 'job_title', 'job_category', 'company_size', 'work_setting', 'salary_category']
+    data_numeric = data[numeric_cols]
+
  
-    #Applying our kmeans function from scratch
-    labels = KMeans_scratch(projected,6,5)
+    pca = PCA(2)
+    projected = pca.fit_transform(data_numeric)
+    print("Variância explicada por cada componente:", pca.explained_variance_ratio_)
+    print("Formato original dos dados:", data_numeric.shape)
+    print("Formato dos dados projetados:", projected.shape)
     
-    #Visualize the results 
-    plot_samples(projected, labels, 'Clusters Labels KMeans from scratch')
+    # Aplicando a função KMeans implementada do zero
+    labels_scratch = KMeans_scratch(projected, 4, 4)
+    
+    # Visualizando os resultados do KMeans implementado do zero
+    plot_samples(projected, labels_scratch, 'Clusters Labels KMeans from scratch')
 
-    #Applying sklearn kemans function
-    kmeans = KMeans(n_clusters=6).fit(projected)
-    print(kmeans.inertia_)
-    centers = kmeans.cluster_centers_
-    score = silhouette_score(projected, kmeans.labels_)    
-    print("For n_clusters = {}, silhouette score is {})".format(10, score))
+    # Aplicando a função KMeans do sklearn
+    kmeans = KMeans(n_clusters=4).fit(projected)
+    score = silhouette_score(projected, kmeans.labels_)
+    print("Silhouette score para n_clusters=6:", score)
 
-    #Visualize the results sklearn
-    plot_samples(projected, kmeans.labels_, 'Clusters Labels KMeans from sklearn')
+    # Visualizando os resultados do KMeans do sklearn
+    plot_samples(projected, kmeans.labels_, 'Clusters')
 
     plt.show()
- 
 
 if __name__ == "__main__":
     main()

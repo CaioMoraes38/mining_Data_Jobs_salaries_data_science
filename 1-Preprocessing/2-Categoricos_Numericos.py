@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 def main():
     # Carrega o dataset
-    df = pd.read_csv('0-Datasets/DatasetJobsScienceDados.csv')
+    df = pd.read_csv('0-Datasets/DatasetJobsScienceDadosClear.csv')
     
     # Verifica dados faltantes
     missing_values = df.isnull().sum()
@@ -13,7 +13,7 @@ def main():
     print(missing_values)
 
     # Seleciona colunas relevantes
-    colunas_features = ['work_year','job_title','job_category','salary_in_usd','company_size','work_setting']
+    colunas_features = ['work_year','job_title','job_category','salary_in_usd','company_size','work_setting','salary_category']
 
     # Cria um novo DataFrame com as colunas desejadas
     df_features = df[colunas_features]

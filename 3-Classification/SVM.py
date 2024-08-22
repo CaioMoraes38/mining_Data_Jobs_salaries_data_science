@@ -1,14 +1,11 @@
-# Initial imports
+# Importação dos módulos
 import itertools
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import confusion_matrix
-from sklearn import datasets
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 from sklearn.svm import SVC
 
 def plot_confusion_matrix(cm, classes,
@@ -44,71 +41,63 @@ def plot_confusion_matrix(cm, classes,
 
     plt.tight_layout()
     plt.ylabel('True label')
-    plt.xlabel('Predicted label')    
+    plt.xlabel('Predicted label')
 
-def load_dataset(dataset='cancer'):        
-    if dataset == 'iris':
-        # Load iris data and store in dataframe
-        iris = datasets.load_iris()
-        names = iris.target_names
-        df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
-        df['target'] = iris.target
-    elif dataset == 'cancer':
-        # Load cancer data and store in dataframe
-        cancer = datasets.load_breast_cancer()
-        names = cancer.target_names
-        df = pd.DataFrame(data=cancer.data, columns=cancer.feature_names)
-        df['target'] = cancer.target
+def load_dataset(file_path):        
+    df = pd.read_csv(file_path)
+
+    # Assumindo que a coluna de rótulo é 'target'; ajuste se necessário
+    target_column = 'salary_category'
+    if target_column not in df.columns:
+        raise ValueError(f"Coluna de rótulo '{target_column}' não encontrada no DataFrame.")
     
-    print(df.head())
-    return names, df
+    # Codifica variáveis categóricas usando one-hot encoding
+    df_encoded = pd.get_dummies(df, drop_first=True)
+    print("Colunas após codificação:", df_encoded.columns)
 
+    return df_encoded
 
 def main():
-    #load dataset
-    target_names, df = load_dataset('iris')
+    # Carrega o dataset
+    df = load_dataset('0-Datasets/DatasetJobsScienceDadosClear.csv')  # Ajuste o caminho do arquivo
 
-    # Separate X and y data
-    X = df.drop('target', axis=1)
-    y = df.target   
+    # Ajuste o nome da coluna de rótulo se necessário
+    target_column = 'salary_category'  # Substitua pelo nome correto da coluna de rótulo
+
+    # Separa os dados em X e y
+    X = df.drop(target_column, axis=1)
+    y = df[target_column]
     print("Total samples: {}".format(X.shape[0]))
 
-    # Split the data - 75% train, 25% test
+    # Divide os dados em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
     print("Total train samples: {}".format(X_train.shape[0]))
-    print("Total test  samples: {}".format(X_test.shape[0]))
+    print("Total test samples: {}".format(X_test.shape[0]))
 
-    # Scale the X data using Z-score
+    # Normaliza os dados
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
-
-    # TESTS USING SVM classifier from sk-learn    
-    svm = SVC(kernel='poly') # poly, rbf, linear
-    # training using train dataset
+        
+    # TESTE USANDO SVM do sklearn    
+    svm = SVC(kernel='poly')  # Pode ser 'poly', 'rbf', 'linear'
+    # Treinamento usando o conjunto de dados de treino
     svm.fit(X_train, y_train)
-    # get support vectors
-    print(svm.support_vectors_)
-    # get indices of support vectors
-    print(svm.support_)
-    # get number of support vectors for each class
-    print("Qtd Support vectors: ")
-    print(svm.n_support_)
-    # predict using test dataset
+    # Predição usando o conjunto de dados de teste
     y_hat_test = svm.predict(X_test)
 
-     # Get test accuracy score
-    accuracy = accuracy_score(y_test, y_hat_test)*100
-    f1 = f1_score(y_test, y_hat_test,average='macro')
-    print("Acurracy SVM from sk-learn: {:.2f}%".format(accuracy))
-    print("F1 Score SVM from sk-learn: {:.2f}%".format(f1))
+    # Obtém a acurácia do teste
+    accuracy = accuracy_score(y_test, y_hat_test) * 100
+    f1 = f1_score(y_test, y_hat_test, average='macro')
+    print("Accuracy SVM from sklearn: {:.2f}%".format(accuracy))
+    print("F1 Score SVM from sklearn: {:.2f}".format(f1))
 
-    # Get test confusion matrix    
-    cm = confusion_matrix(y_test, y_hat_test)        
-    plot_confusion_matrix(cm, target_names, False, "Confusion Matrix - SVM sklearn")      
-    plot_confusion_matrix(cm, target_names, True, "Confusion Matrix - SVM sklearn normalized" )  
+    # Matriz de confusão
+    cm = confusion_matrix(y_test, y_hat_test)
+    plot_confusion_matrix(cm, np.unique(y), False, "Confusion Matrix - SVM sklearn")
+    plot_confusion_matrix(cm, np.unique(y), True, "Confusion Matrix - SVM sklearn normalized")
+    
     plt.show()
-
 
 if __name__ == "__main__":
     main()
