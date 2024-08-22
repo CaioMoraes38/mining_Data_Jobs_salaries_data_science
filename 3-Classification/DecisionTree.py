@@ -1,8 +1,10 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
+from sklearn.metrics import confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def main():
     # Carregar o conjunto de dados
@@ -18,7 +20,6 @@ def main():
     data['work_setting'] = data['work_setting'].astype('category').cat.codes
     data['company_size'] = data['company_size'].astype('category').cat.codes
     
-    
     if 'salary_category' in data.columns:
         X = data.drop('salary_category', axis=1)
         y = data['salary_category']
@@ -32,6 +33,30 @@ def main():
     # Criar e treinar o classificador de árvore de decisão
     clf = DecisionTreeClassifier(max_leaf_nodes=200)
     clf.fit(X_train, y_train)
+    
+    # Fazer previsões no conjunto de teste
+    y_pred = clf.predict(X_test)
+    
+    # Calcular e exibir a acurácia no conjunto de teste
+    accuracy_test = accuracy_score(y_test, y_pred)
+    print(f'Acurácia no conjunto de teste: {accuracy_test:.2f}')
+    
+    # Avaliação com validação cruzada
+    cv_scores = cross_val_score(clf, X, y, cv=5, scoring='accuracy')
+    print(f'Acurácia (Validação Cruzada): {cv_scores.mean():.2f} ± {cv_scores.std():.2f}')
+    
+    # Matriz de Confusão
+    cm = confusion_matrix(y_test, y_pred)
+    print('Matriz de Confusão:')
+    print(cm)
+
+    # Visualizar a matriz de confusão
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=y.unique(), yticklabels=y.unique())
+    plt.xlabel('Rótulo Predito')
+    plt.ylabel('Rótulo Verdadeiro')
+    plt.title('Matriz de Confusão')
+    plt.show()
     
     # Visualizar a árvore de decisão
     plt.figure(figsize=(12,8))

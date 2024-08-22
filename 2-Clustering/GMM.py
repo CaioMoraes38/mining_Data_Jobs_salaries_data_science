@@ -29,14 +29,13 @@ def main():
     numeric_cols = ['work_year', 'salary_in_usd', 'job_title', 'job_category', 'company_size', 'work_setting', 'salary_category']
     data_numeric = data[numeric_cols]
 
-    # Aplicando PCA para reduzir a dimensionalidade para visualização
+  
     pca = PCA(2)
     projected = pca.fit_transform(data_numeric)
     print("Variância explicada por cada componente:", pca.explained_variance_ratio_)
     print("Formato original dos dados:", data_numeric.shape)
     print("Formato dos dados projetados:", projected.shape)
 
-    # Testando diferentes números de clusters usando GMM
     n_clusters = range(1, 11)
     bics = []
     aics = []
@@ -46,7 +45,6 @@ def main():
         bics.append(gm.bic(projected))
         aics.append(gm.aic(projected))
 
-    # Plotando BIC e AIC
     plt.figure(figsize=(10, 6))
     plt.plot(n_clusters, bics, label='BIC', marker='o')
     plt.plot(n_clusters, aics, label='AIC', marker='o')

@@ -10,11 +10,11 @@ from sklearn.svm import SVC
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
-                          title='Confusion matrix',
+                          title='Matriz de Confusão',
                           cmap=plt.cm.Blues):
     """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
+    Esta função imprime e plota a matriz de confusão.
+    A normalização pode ser aplicada definindo `normalize=True`.
     """
     plt.figure()
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
@@ -26,9 +26,9 @@ def plot_confusion_matrix(cm, classes,
 
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
+        print("Matriz de confusão normalizada")
     else:
-        print('Confusion matrix, without normalization')
+        print('Matriz de confusão, sem normalização')
 
     cm = np.round(cm, 2)
     print(cm)
@@ -40,13 +40,13 @@ def plot_confusion_matrix(cm, classes,
                  color="white" if cm[i, j] > thresh else "black")
 
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
+    plt.ylabel('Rótulo verdadeiro')
+    plt.xlabel('Rótulo previsto')
 
 def load_dataset(file_path):        
     df = pd.read_csv(file_path)
 
-    # Assumindo que a coluna de rótulo é 'target'; ajuste se necessário
+    # Assumindo que a coluna de rótulo é 'salary_category'; ajuste se necessário
     target_column = 'salary_category'
     if target_column not in df.columns:
         raise ValueError(f"Coluna de rótulo '{target_column}' não encontrada no DataFrame.")
@@ -67,12 +67,12 @@ def main():
     # Separa os dados em X e y
     X = df.drop(target_column, axis=1)
     y = df[target_column]
-    print("Total samples: {}".format(X.shape[0]))
+    print("Total de amostras: {}".format(X.shape[0]))
 
     # Divide os dados em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
-    print("Total train samples: {}".format(X_train.shape[0]))
-    print("Total test samples: {}".format(X_test.shape[0]))
+    print("Total de amostras de treino: {}".format(X_train.shape[0]))
+    print("Total de amostras de teste: {}".format(X_test.shape[0]))
 
     # Normaliza os dados
     scaler = StandardScaler()
@@ -89,13 +89,13 @@ def main():
     # Obtém a acurácia do teste
     accuracy = accuracy_score(y_test, y_hat_test) * 100
     f1 = f1_score(y_test, y_hat_test, average='macro')
-    print("Accuracy SVM from sklearn: {:.2f}%".format(accuracy))
-    print("F1 Score SVM from sklearn: {:.2f}".format(f1))
+    print("Acurácia SVM do sklearn: {:.2f}%".format(accuracy))
+    print("F1 Score SVM do sklearn: {:.2f}".format(f1))
 
     # Matriz de confusão
     cm = confusion_matrix(y_test, y_hat_test)
-    plot_confusion_matrix(cm, np.unique(y), False, "Confusion Matrix - SVM sklearn")
-    plot_confusion_matrix(cm, np.unique(y), True, "Confusion Matrix - SVM sklearn normalized")
+    plot_confusion_matrix(cm, np.unique(y), False, "Matriz de Confusão - SVM sklearn")
+    plot_confusion_matrix(cm, np.unique(y), True, "Matriz de Confusão - SVM sklearn normalizada")
     
     plt.show()
 
