@@ -19,10 +19,6 @@ def main():
     # Carregando o conjunto de dados
     data = pd.read_csv('0-Datasets/DatasetJobsScienceDadosClear.csv')
 
-    # Verifique as colunas disponíveis no DataFrame
-    print("Colunas disponíveis no DataFrame:")
-    print(data.columns)
-
     # Convertendo colunas categóricas em numéricas usando o método de codificação de rótulos
     data['job_title'] = data['job_title'].astype('category').cat.codes
     data['job_category'] = data['job_category'].astype('category').cat.codes
@@ -40,12 +36,36 @@ def main():
     print("Formato original dos dados:", data_numeric.shape)
     print("Formato dos dados projetados:", projected.shape)
 
-    # Aplicando Gaussian Mixture Model (GMM) para agrupar os dados
-    gm = GaussianMixture(n_components=4).fit(projected)  
+    # Testando diferentes números de clusters usando GMM
+    n_clusters = range(1, 11)
+    bics = []
+    aics = []
+    
+    for n in n_clusters:
+        gm = GaussianMixture(n_components=n).fit(projected)
+        bics.append(gm.bic(projected))
+        aics.append(gm.aic(projected))
+
+    # Plotando BIC e AIC
+    plt.figure(figsize=(10, 6))
+    plt.plot(n_clusters, bics, label='BIC', marker='o')
+    plt.plot(n_clusters, aics, label='AIC', marker='o')
+    plt.xlabel('Número de Clusters')
+    plt.ylabel('Valor do Critério')
+    plt.title('BIC e AIC para Diferentes Números de Clusters')
+    plt.legend()
+    plt.show()
+
+    
+    optimal_clusters = n_clusters[np.argmin(bics)]
+    print(f'Número ideal de clusters baseado no BIC: {optimal_clusters}')
+
+    # Aplicando GMM com o número ideal de clusters
+    gm = GaussianMixture(n_components=optimal_clusters).fit(projected)
     labels = gm.predict(projected)
 
     # Visualizando os resultados
-    plot_samples(projected, labels, 'Clusters Labels GMM')
+    plot_samples(projected, labels, f'Clusters Labels GMM (n_clusters={optimal_clusters})')
 
     plt.show()
 

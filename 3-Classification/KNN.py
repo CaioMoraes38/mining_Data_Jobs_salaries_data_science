@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from collections import Counter
 
@@ -38,7 +38,7 @@ def knn_predict(X_train, X_test, y_train, y_test, k, p):
 # Plota a matriz de confusão
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
-                          title='Confusion matrix',
+                          title='Matriz de Confusão',
                           cmap=plt.cm.Blues):
     plt.figure()
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
@@ -50,9 +50,9 @@ def plot_confusion_matrix(cm, classes,
 
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
+        print("Matriz de confusão normalizada")
     else:
-        print('Confusion matrix, without normalization')
+        print('Matriz de confusão, sem normalização')
 
     print(cm)
 
@@ -63,8 +63,8 @@ def plot_confusion_matrix(cm, classes,
                  color="white" if cm[i, j] > thresh else "black")
 
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')    
+    plt.ylabel('Rótulo Verdadeiro')
+    plt.xlabel('Rótulo Predito')
 
 def main():
     # Carrega sua base de dados
@@ -82,15 +82,15 @@ def main():
     df_encoded = pd.get_dummies(df, drop_first=True)
     print("Colunas após codificação:", df_encoded.columns)
 
-    # Separa os dados em X e y novamente
+    # Separa os dados em X e y
     X = df_encoded.drop(target_column, axis=1)
     y = df_encoded[target_column]
-    print("Total samples: {}".format(X.shape[0]))
+    print("Total de amostras: {}".format(X.shape[0]))
 
     # Divide os dados em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
-    print("Total train samples: {}".format(X_train.shape[0]))
-    print("Total test samples: {}".format(X_test.shape[0]))
+    print("Total de amostras de treino: {}".format(X_train.shape[0]))
+    print("Total de amostras de teste: {}".format(X_test.shape[0]))
 
     # Normaliza os dados
     scaler = StandardScaler()
@@ -100,28 +100,24 @@ def main():
     # Teste usando KNN implementado do zero
     y_hat_test = knn_predict(X_train, X_test, y_train, y_test, k=5, p=2)
     accuracy = accuracy_score(y_test, y_hat_test) * 100
-    f1 = f1_score(y_test, y_hat_test, average='macro')
-    print("Accuracy K-NN from scratch: {:.2f}%".format(accuracy))
-    print("F1 Score K-NN from scratch: {:.2f}".format(f1))
+    print("Acurácia K-NN do zero: {:.2f}%".format(accuracy))
 
     # Matriz de confusão
     cm = confusion_matrix(y_test, y_hat_test)
-    plot_confusion_matrix(cm, np.unique(y), False, "Confusion Matrix - K-NN")
-    plot_confusion_matrix(cm, np.unique(y), True, "Confusion Matrix - K-NN normalized")  
+    plot_confusion_matrix(cm, np.unique(y), False, "Matriz de Confusão - K-NN do zero")
+    plot_confusion_matrix(cm, np.unique(y), True, "Matriz de Confusão - K-NN do zero normalizada")  
 
     # Teste usando KNN do sklearn
     knn = KNeighborsClassifier(n_neighbors=5)
     knn.fit(X_train, y_train)
     y_hat_test = knn.predict(X_test)
     accuracy = accuracy_score(y_test, y_hat_test) * 100
-    f1 = f1_score(y_test, y_hat_test, average='macro')
-    print("Accuracy K-NN from sklearn: {:.2f}%".format(accuracy))
-    print("F1 Score K-NN from sklearn: {:.2f}".format(f1))
+    print("Acurácia K-NN do sklearn: {:.2f}%".format(accuracy))
 
     # Matriz de confusão
     cm = confusion_matrix(y_test, y_hat_test)
-    plot_confusion_matrix(cm, np.unique(y), False, "Confusion Matrix - K-NN sklearn")
-    plot_confusion_matrix(cm, np.unique(y), True, "Confusion Matrix - K-NN sklearn normalized")
+    plot_confusion_matrix(cm, np.unique(y), False, "Matriz de Confusão - K-NN sklearn")
+    plot_confusion_matrix(cm, np.unique(y), True, "Matriz de Confusão - K-NN sklearn normalizada")
     
     plt.show()
 

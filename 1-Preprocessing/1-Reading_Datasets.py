@@ -18,6 +18,9 @@ def main():
     print("\nVariações de dados nas Colunas: \n")
     print(df_features.nunique())
 
+    max_salary = df_features['salary_in_usd'].max()
+    print(f"\nMaior valor na coluna salary_in_usd: {max_salary}")
+    
     # Categorizar a coluna salary_in_usd em 4 categorias
     df_features['salary_category'] = pd.cut(df_features['salary_in_usd'], bins=4, labels=[1, 2, 3, 4])
     
