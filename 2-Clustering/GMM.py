@@ -1,69 +1,85 @@
 import numpy as np
 import pandas as pd
+from scipy.spatial.distance import cdist
 from sklearn.decomposition import PCA
-from sklearn.mixture import GaussianMixture
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
 
-def plot_samples(projected, labels, title):    
+# Função de KMeans do zero
+def KMeans_scratch(x, k, no_of_iterations):
+    idx = np.random.choice(len(x), k, replace=False)
+    # Escolhendo centroids aleatoriamente
+    centroids = x[idx, :]  # Passo 1
+    
+    for _ in range(no_of_iterations):
+        # Encontrando a distância entre os centroids e todos os pontos de dados
+        distances = cdist(x, centroids, 'euclidean')  # Passo 2
+        # Atribuindo o ponto ao centroid mais próximo
+        points = np.array([np.argmin(i) for i in distances])  # Passo 3
+        
+        # Atualizando os centroids
+        new_centroids = []
+        for idx in range(k):
+            if np.any(points == idx):  # Evita divisão por zero se algum cluster estiver vazio
+                temp_cent = x[points == idx].mean(axis=0)
+            else:
+                temp_cent = centroids[idx]  # Mantém o centroide se o cluster estiver vazio
+            new_centroids.append(temp_cent)
+        
+        centroids = np.vstack(new_centroids)  # Centroids atualizados
+    
+    return points
+
+def plot_samples(projected, labels, title):
     fig = plt.figure()
     u_labels = np.unique(labels)
     for i in u_labels:
-        plt.scatter(projected[labels == i , 0] , projected[labels == i , 1] , label = i,
-                    edgecolor='none', alpha=0.5, cmap=plt.cm.get_cmap('tab10', 10))
-    plt.xlabel('Component 1')
-    plt.ylabel('Component 2')
+        plt.scatter(projected[labels == i, 0], projected[labels == i, 1], label=i,
+                    edgecolor='none', alpha=0.5, cmap=plt.cm.get_cmap('tab10', len(u_labels)))
+    plt.xlabel('Componente 1')
+    plt.ylabel('Componente 2')
     plt.legend()
     plt.title(title)
 
 def main():
-    # Carregando o conjunto de dados
-    data = pd.read_csv('0-Datasets/DatasetJobsScienceDadosClear.csv')
+    # Carregar o conjunto de dados personalizado
+    data = pd.read_csv('0-Datasets/DatasetJobsScienceDadosClear.csv')  # Ajuste o caminho do arquivo
 
-    # Convertendo colunas categóricas em numéricas usando o método de codificação de rótulos
-    data['job_title'] = data['job_title'].astype('category').cat.codes
-    data['job_category'] = data['job_category'].astype('category').cat.codes
-    data['work_setting'] = data['work_setting'].astype('category').cat.codes
-    data['company_size'] = data['company_size'].astype('category').cat.codes
+    # Convertendo colunas categóricas em numéricas se necessário
+    data = pd.get_dummies(data, drop_first=True)
 
-    # Selecione apenas as colunas numéricas para o modelo
-    numeric_cols = ['work_year', 'salary_in_usd', 'job_title', 'job_category', 'company_size', 'work_setting', 'salary_category']
-    data_numeric = data[numeric_cols]
+    # Selecione as colunas numéricas para o modelo
+    numeric_cols = data.columns
+    X = data[numeric_cols]
 
-  
+    # Normalizar os dados
+    from sklearn.preprocessing import StandardScaler
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # Aplicar PCA para redução de dimensionalidade
     pca = PCA(2)
-    projected = pca.fit_transform(data_numeric)
+    projected = pca.fit_transform(X_scaled)
     print("Variância explicada por cada componente:", pca.explained_variance_ratio_)
-    print("Formato original dos dados:", data_numeric.shape)
     print("Formato dos dados projetados:", projected.shape)
 
-    n_clusters = range(1, 11)
-    bics = []
-    aics = []
+    # Aplicando a função KMeans do zero
+    k = 6  # Defina o número de clusters desejado
+    labels = KMeans_scratch(projected, k, 10)
     
-    for n in n_clusters:
-        gm = GaussianMixture(n_components=n).fit(projected)
-        bics.append(gm.bic(projected))
-        aics.append(gm.aic(projected))
+    # Visualizar os resultados
+    plot_samples(projected, labels, 'Rótulos dos Clusters KMeans do Zero')
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(n_clusters, bics, label='BIC', marker='o')
-    plt.plot(n_clusters, aics, label='AIC', marker='o')
-    plt.xlabel('Número de Clusters')
-    plt.ylabel('Valor do Critério')
-    plt.title('BIC e AIC para Diferentes Números de Clusters')
-    plt.legend()
-    plt.show()
+    # Aplicando KMeans do sklearn
+    kmeans = KMeans(n_clusters=k).fit(projected)
+    print("Inércia:", kmeans.inertia_)
+    centers = kmeans.cluster_centers_
+    score = silhouette_score(projected, kmeans.labels_)
+    print(f"Para n_clusters = {k}, a pontuação silhouette é {score:.2f}")
 
-    
-    optimal_clusters = n_clusters[np.argmin(bics)]
-    print(f'Número ideal de clusters baseado no BIC: {optimal_clusters}')
-
-    # Aplicando GMM com o número ideal de clusters
-    gm = GaussianMixture(n_components=optimal_clusters).fit(projected)
-    labels = gm.predict(projected)
-
-    # Visualizando os resultados
-    plot_samples(projected, labels, f'Clusters Labels GMM (n_clusters={optimal_clusters})')
+    # Visualizar os resultados do sklearn
+    plot_samples(projected, kmeans.labels_, 'Rótulos dos Clusters KMeans do sklearn')
 
     plt.show()
 

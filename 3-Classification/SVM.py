@@ -1,9 +1,8 @@
-# Importação dos módulos
 import itertools
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 from sklearn.svm import SVC
@@ -78,7 +77,7 @@ def main():
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
-        
+
     # TESTE USANDO SVM do sklearn    
     svm = SVC(kernel='poly')  # Pode ser 'poly', 'rbf', 'linear'
     # Treinamento usando o conjunto de dados de treino
@@ -98,6 +97,10 @@ def main():
     plot_confusion_matrix(cm, np.unique(y), True, "Matriz de Confusão - SVM sklearn normalizada")
     
     plt.show()
+
+    # Validação Cruzada
+    cv_scores = cross_val_score(svm, X, y, cv=5, scoring='accuracy')
+    print(f'Acurácia média (Validação Cruzada): {cv_scores.mean():.2f} ± {cv_scores.std():.2f}')
 
 if __name__ == "__main__":
     main()
